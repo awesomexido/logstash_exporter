@@ -2,7 +2,7 @@ package collector
 
 import (
 	"encoding/json"
-	"github.com/prometheus/common/log"
+	"github.com/prometheus/common/promlog"
 	"net/http"
 )
 
