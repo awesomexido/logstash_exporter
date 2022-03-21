@@ -2,7 +2,7 @@ package collector
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/common/promlog"
+
 )
 
 // NodeStatsCollector type
@@ -287,7 +287,7 @@ func NewNodeStatsCollector(logstashEndpoint string) (Collector, error) {
 // Collect function implements nodestats_collector collector
 func (c *NodeStatsCollector) Collect(ch chan<- prometheus.Metric) error {
 	if desc, err := c.collect(ch); err != nil {
-		log.Error("Failed collecting node metrics", desc, err)
+
 		return err
 	}
 	return nil
