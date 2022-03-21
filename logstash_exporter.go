@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/BonnierNews/logstash_exporter/collector"
+	"github.com/awesomexido/logstash_exporter/collector"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/promlog"
 	"github.com/prometheus/common/version"
