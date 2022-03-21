@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/awesomexido/logstash_exporter/collector"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/common/promlog"
 	"github.com/prometheus/common/version"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"net/http"
@@ -33,12 +32,10 @@ type LogstashCollector struct {
 func NewLogstashCollector(logstashEndpoint string) (*LogstashCollector, error) {
 	nodeStatsCollector, err := collector.NewNodeStatsCollector(logstashEndpoint)
 	if err != nil {
-		log.Fatalf("Cannot register a new collector: %v", err)
 	}
 
 	nodeInfoCollector, err := collector.NewNodeInfoCollector(logstashEndpoint)
 	if err != nil {
-		log.Fatalf("Cannot register a new collector: %v", err)
 	}
 
 	return &LogstashCollector{
@@ -55,9 +52,7 @@ func listen(exporterBindAddress string) {
 		http.Redirect(w, r, "/metrics", http.StatusMovedPermanently)
 	})
 
-	log.Infoln("Starting server on", exporterBindAddress)
 	if err := http.ListenAndServe(exporterBindAddress, nil); err != nil {
-		log.Fatalf("Cannot start Logstash exporter: %s", err)
 	}
 }
 
@@ -87,10 +82,9 @@ func execute(name string, c collector.Collector, ch chan<- prometheus.Metric) {
 	var result string
 
 	if err != nil {
-		log.Errorf("ERROR: %s collector failed after %fs: %s", name, duration.Seconds(), err)
+
 		result = "error"
 	} else {
-		log.Debugf("OK: %s collector succeeded after %fs.", name, duration.Seconds())
 		result = "success"
 	}
 	scrapeDurations.WithLabelValues(name, result).Observe(duration.Seconds())
@@ -106,19 +100,16 @@ func main() {
 		exporterBindAddress = kingpin.Flag("web.listen-address", "Address on which to expose metrics and web interface.").Default(":9198").String()
 	)
 
-	log.AddFlags(kingpin.CommandLine)
 	kingpin.Version(version.Print("logstash_exporter"))
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
 
 	logstashCollector, err := NewLogstashCollector(*logstashEndpoint)
 	if err != nil {
-		log.Fatalf("Cannot register a new Logstash Collector: %v", err)
+
 	}
 
 	prometheus.MustRegister(logstashCollector)
 
-	log.Infoln("Starting Logstash exporter", version.Info())
-	log.Infoln("Build context", version.BuildContext())
 	listen(*exporterBindAddress)
 }
